@@ -1,36 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <title>Cadastro de Currículo</title>
+<meta charset="UTF-8">
+<title>Cadastro de Currículo</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2e59d9;
+}
+
+.preview {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.preview img {
+    max-width: 120px;
+    border-radius: 50%;
+    margin-top: 10px;
+}
+</style>
+
 </head>
 <body>
 
-<h2>Currículo Online</h2>
+<div class="container">
+<h2>Cadastro de Currículo</h2>
 
 <form id="form">
-  <input type="text" placeholder="Nome" required><br><br>
-  <input type="email" placeholder="Email" required><br><br>
-  <input type="file" id="foto" required><br><br>
-  <button type="submit">Salvar</button>
+
+<input type="text" id="nome" placeholder="Nome completo" required>
+<input type="email" id="email" placeholder="Email" required>
+<input type="text" id="telefone" placeholder="Telefone" required>
+
+<textarea id="formacao" placeholder="Formação acadêmica" required></textarea>
+<textarea id="experiencia" placeholder="Experiência profissional" required></textarea>
+
+<div class="preview">
+    <input type="file" id="foto" accept="image/*" required>
+    <img id="imagemPreview" />
+</div>
+
+<button type="submit">Enviar Currículo</button>
+
 </form>
+</div>
 
 <script>
-  const form = document.getElementById("form");
 
-  form.addEventListener("submit", async (e) => {
+const fotoInput = document.getElementById("foto");
+const preview = document.getElementById("imagemPreview");
+
+fotoInput.addEventListener("change", function() {
+    const file = this.files[0];
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+    }
+});
+
+document.getElementById("form").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const formData = new FormData();
+    formData.append("nome", document.getElementById("nome").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("telefone", document.getElementById("telefone").value);
+    formData.append("formacao", document.getElementById("formacao").value);
+    formData.append("experiencia", document.getElementById("experiencia").value);
     formData.append("foto", document.getElementById("foto").files[0]);
 
     const response = await fetch("http://localhost:8081/curriculo/upload", {
-      method: "POST",
-      body: formData
+        method: "POST",
+        body: formData
     });
 
     const data = await response.json();
+
     alert(data.mensagem);
-  });
+});
+
 </script>
 
 </body>
